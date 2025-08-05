@@ -18,6 +18,7 @@
 
 package com.github.retrooper.packetevents.wrapper.play.client;
 
+import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
@@ -59,8 +60,9 @@ public class WrapperPlayClientUpdateSign extends PacketWrapper<WrapperPlayClient
             isFrontText = true;
         }
         textLines = new String[4];
+        int limit = PacketEvents.getAPI().getSettings().getSignLineLengthLimit();
         for (int i = 0; i < 4; i++) {
-            this.textLines[i] = readString(5000);
+            this.textLines[i] = readString(limit);
         }
     }
 
@@ -77,8 +79,9 @@ public class WrapperPlayClientUpdateSign extends PacketWrapper<WrapperPlayClient
         if (serverVersion.isNewerThanOrEquals(ServerVersion.V_1_20)) {
             writeBoolean(isFrontText);
         }
+        int limit = PacketEvents.getAPI().getSettings().getSignLineLengthLimit();
         for (int i = 0; i < 4; i++) {
-            writeString(textLines[i]);
+            writeString(textLines[i], limit);
         }
     }
 

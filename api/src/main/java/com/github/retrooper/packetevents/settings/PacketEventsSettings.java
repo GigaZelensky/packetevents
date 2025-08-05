@@ -40,6 +40,7 @@ public class PacketEventsSettings {
     private boolean fullStackTraceEnabled = false;
     private boolean kickOnPacketExceptionEnabled = true;
     private boolean kickIfTerminated = true;
+    private int signLineLengthLimit = 384;
     private Function<String, InputStream> resourceProvider = path -> PacketEventsSettings.class
             .getClassLoader()
             .getResourceAsStream(path);
@@ -153,6 +154,18 @@ public class PacketEventsSettings {
     }
 
     /**
+     * This decides the maximum amount of characters a single sign line may contain.
+     *
+     * @param signLineLengthLimit Value
+     * @return Settings instance.
+     */
+    @ApiStatus.Internal
+    public PacketEventsSettings signLineLengthLimit(int signLineLengthLimit) {
+        this.signLineLengthLimit = signLineLengthLimit;
+        return this;
+    }
+
+    /**
      * Some projects may want to implement a CDN with resources like asset mappings
      * By default, all resources are retrieved from the ClassLoader
      *
@@ -239,6 +252,15 @@ public class PacketEventsSettings {
      */
     public boolean isKickIfTerminated() {
         return kickIfTerminated;
+    }
+
+    /**
+     * Retrieve the maximum allowed characters per sign line.
+     *
+     * @return Getter for {@link #signLineLengthLimit}
+     */
+    public int getSignLineLengthLimit() {
+        return signLineLengthLimit;
     }
 
     /**
