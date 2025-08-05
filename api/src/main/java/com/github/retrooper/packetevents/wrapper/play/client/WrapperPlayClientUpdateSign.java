@@ -60,7 +60,7 @@ public class WrapperPlayClientUpdateSign extends PacketWrapper<WrapperPlayClient
         }
         textLines = new String[4];
         for (int i = 0; i < 4; i++) {
-            this.textLines[i] = readString(10000);
+            this.textLines[i] = readString(30000);
         }
     }
 
