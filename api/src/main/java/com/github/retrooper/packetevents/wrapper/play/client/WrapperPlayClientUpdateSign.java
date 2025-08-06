@@ -23,14 +23,32 @@ import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This message is sent from the client to the server when the "Done" button is pushed after placing a sign.
  */
 public class WrapperPlayClientUpdateSign extends PacketWrapper<WrapperPlayClientUpdateSign> {
+    private static final int DEFAULT_MAX_LENGTH = 384;
+    private static final Map<UUID, Integer> PLAYER_LIMITS = new ConcurrentHashMap<>();
+
     private Vector3i blockPosition;
     private String[] textLines;
     private boolean isFrontText;
+
+    public static void setPlayerMaxLength(UUID uuid, int length) {
+        PLAYER_LIMITS.put(uuid, length);
+    }
+
+    public static void removePlayerMaxLength(UUID uuid) {
+        PLAYER_LIMITS.remove(uuid);
+    }
+
+    private static int getPlayerMaxLength(UUID uuid) {
+        return PLAYER_LIMITS.getOrDefault(uuid, DEFAULT_MAX_LENGTH);
+    }
 
     public WrapperPlayClientUpdateSign(PacketReceiveEvent event) {
         super(event);
@@ -58,9 +76,13 @@ public class WrapperPlayClientUpdateSign extends PacketWrapper<WrapperPlayClient
         } else {
             isFrontText = true;
         }
+        int max = DEFAULT_MAX_LENGTH;
+        if (this.user != null) {
+            max = getPlayerMaxLength(this.user.getUUID());
+        }
         textLines = new String[4];
         for (int i = 0; i < 4; i++) {
-            this.textLines[i] = readString(384);
+            this.textLines[i] = readString(max);
         }
     }
 
